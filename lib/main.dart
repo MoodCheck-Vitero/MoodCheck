@@ -1,0 +1,67 @@
+import 'package:flutter/material.dart';
+import 'package:mood_check/screens/change_email.dart';
+import 'package:mood_check/screens/change_password.dart';
+import 'package:mood_check/screens/reset_screen.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'screens/login_screen.dart';
+import 'screens/register_screen.dart';
+import 'services/auth_gate.dart';
+
+Future<void> main() async {
+  await Supabase.initialize(
+    url: 'https://hyvrslwltpwrliqxzlit.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5dnJzbHdsdHB3cmxpcXh6bGl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkwNjUyMTcsImV4cCI6MjA3NDY0MTIxN30.srwxHK5LgFE_0LX-jqwkpJneNnAt_-BW5TEyMMcGfxI',
+  );
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        brightness: Brightness.light,
+        primarySwatch: Colors.green,
+      ),
+      home: const AuthGate(),
+      routes: {
+        '/login': (context) => const LoginScreen(),
+        '/register': (context) => const RegisterScreen(),
+        '/reset_password': (context) => const ResetScreen(),
+        '/change_email': (context) => const ChangeEmail(),
+        '/change_password': (context) => const ChangePassword(),
+      },
+    );
+  }
+  
+}
+
+class SlidePageRoute extends PageRouteBuilder {
+  final Widget page;
+  final AxisDirection direction;
+
+  SlidePageRoute({required this.page, this.direction = AxisDirection.left})
+      : super(
+          transitionDuration: const Duration(milliseconds: 300),
+          pageBuilder: (context, animation, secondaryAnimation) => page,
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            const beginOffset = {
+              AxisDirection.left: Offset(1.0, 0.0),
+              AxisDirection.right: Offset(-1.0, 0.0),
+            };
+
+            final offset = Tween<Offset>(
+              begin: beginOffset[direction] ?? Offset.zero,
+              end: Offset.zero,
+            ).animate(animation);
+
+            return SlideTransition(
+              position: offset,
+              child: child,
+            );
+          },
+        );
+}
