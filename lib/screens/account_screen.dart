@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../services/auth_service.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -9,15 +11,20 @@ class AccountScreen extends StatefulWidget {
 
 class _AccountScreenState extends State<AccountScreen> {
   late TextEditingController _usernameController;
-  String? _email;
+  late String _currentUsername;
+  late String _currentEmail;
+  late User? _user;
 
   @override
   void initState() {
     super.initState();
 
-    // Placeholder/mock values
-    _usernameController = TextEditingController(text: "John Doe");
-    _email = "john.doe@example.com";
+    _user = authService.value.currentUser;
+
+    _currentUsername = _user?.userMetadata?['full_name'] ?? "";
+    _currentEmail = _user?.email ?? "";
+
+    _usernameController = TextEditingController(text: _currentUsername);
   }
 
   @override
@@ -26,7 +33,7 @@ class _AccountScreenState extends State<AccountScreen> {
     super.dispose();
   }
 
-  void _saveChanges() {
+  void _saveChanges() async {
     final newUsername = _usernameController.text.trim();
 
     if (newUsername.isEmpty) {
@@ -34,8 +41,23 @@ class _AccountScreenState extends State<AccountScreen> {
       return;
     }
 
-    // Mock success feedback
-    _showSnackBar(context, "Username updated (mock)");
+    try {
+      await authService.value.updateUsername(username: newUsername);
+      
+      setState(() {
+        _currentUsername = newUsername;
+      });
+
+      _showSnackBar(context, "Username updated successfully");
+    } catch (e) {
+      _showSnackBar(context, "Error saving changes: $e");
+    }
+  }
+
+  Future<void> _logOut() async {
+    await authService.value.signOut();
+    Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+    _showSnackBar(context, "Logged out successfully");
   }
 
   @override
@@ -64,15 +86,12 @@ class _AccountScreenState extends State<AccountScreen> {
         padding: const EdgeInsets.all(24),
         children: [
           Text(
-            "Signed in as John Doe", // Mock display name
+            _currentUsername.isNotEmpty ? "Signed in as $_currentUsername" : "Loading user...",
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 4),
           GestureDetector(
-            onTap: () {
-              Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
-              _showSnackBar(context, "Logged out (mock)");
-            },
+            onTap: _logOut,
             child: const Text(
               "Log out",
               style: TextStyle(
@@ -98,7 +117,7 @@ class _AccountScreenState extends State<AccountScreen> {
           const Text("Email Address", style: TextStyle(fontWeight: FontWeight.w500)),
           const SizedBox(height: 6),
           TextField(
-            controller: TextEditingController(text: _email ?? ""),
+            controller: TextEditingController(text: _currentEmail),
             readOnly: true,
             decoration: InputDecoration(
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(4)),
@@ -106,6 +125,8 @@ class _AccountScreenState extends State<AccountScreen> {
             ),
           ),
           const SizedBox(height: 10),
+
+          const Divider(),
 
           ListTile(
             contentPadding: EdgeInsets.zero,
@@ -135,7 +156,7 @@ class _AccountScreenState extends State<AccountScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message, style: const TextStyle(color: Colors.white)),
-        backgroundColor: const Color(0xFF001F8D),
+        backgroundColor: const Color(0xff009d03),
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.all(16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

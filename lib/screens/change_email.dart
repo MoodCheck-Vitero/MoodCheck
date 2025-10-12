@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 
-class ChangeEmail extends StatelessWidget {
+class ChangeEmail extends StatefulWidget {
   const ChangeEmail({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final TextEditingController emailController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
+  State<ChangeEmail> createState() => _ChangeEmailState();
+}
 
+class _ChangeEmailState extends State<ChangeEmail> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  bool _obscurePassword = true;
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F8FF),
       appBar: AppBar(
@@ -46,10 +53,20 @@ class ChangeEmail extends StatelessWidget {
             const SizedBox(height: 6),
             TextField(
               controller: passwordController,
-              obscureText: true,
-              decoration: const InputDecoration(
+              obscureText: _obscurePassword,
+              decoration: InputDecoration(
                 hintText: "Enter password",
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscurePassword = !_obscurePassword;
+                    });
+                  },
+                ),
               ),
             ),
             const SizedBox(height: 28),
@@ -73,7 +90,7 @@ class ChangeEmail extends StatelessWidget {
                   // Simulated email update flow
                   _showSnackBar(
                     context,
-                    "Verification link sent to $newEmail (mocked). Please log in again.",
+                    "Verification link sent. Please log in again.",
                     isError: false,
                   );
 

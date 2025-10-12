@@ -1,44 +1,52 @@
 import 'package:flutter/material.dart';
 
-class ChangePassword extends StatelessWidget {
+class ChangePassword extends StatefulWidget {
   const ChangePassword({super.key});
 
   @override
+  State<ChangePassword> createState() => _ChangePasswordState();
+}
+
+class _ChangePasswordState extends State<ChangePassword> {
+  final TextEditingController currentPasswordController = TextEditingController();
+  final TextEditingController newPasswordController = TextEditingController();
+
+  bool _obscureCurrentPassword = true;
+  bool _obscureNewPassword = true;
+
+  void _showSnackBar(String message, {bool isError = true}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? Colors.red : const Color(0xff009d03),
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+    );
+  }
+
+  Future<void> handleChangePassword() async {
+    final currentPassword = currentPasswordController.text.trim();
+    final newPassword = newPasswordController.text.trim();
+
+    if (currentPassword.isEmpty || newPassword.isEmpty) {
+      _showSnackBar("Please fill out all fields.");
+      return;
+    }
+
+    // Simulated success response (mocked logic)
+    _showSnackBar("Your password has been updated. (mocked)", isError: false);
+
+    // Navigate back after a delay
+    await Future.delayed(const Duration(seconds: 2));
+    if (context.mounted) {
+      Navigator.pop(context);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final TextEditingController currentPasswordController = TextEditingController();
-    final TextEditingController newPasswordController = TextEditingController();
-
-    void _showSnackBar(String message, {bool isError = true}) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: isError ? Colors.red : const Color(0xff009d03),
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-      );
-    }
-
-    Future<void> handleChangePassword() async {
-      final currentPassword = currentPasswordController.text.trim();
-      final newPassword = newPasswordController.text.trim();
-
-      if (currentPassword.isEmpty || newPassword.isEmpty) {
-        _showSnackBar("Please fill out all fields.");
-        return;
-      }
-
-      // Simulated success response (mocked logic)
-      _showSnackBar("Your password has been updated. (mocked)", isError: false);
-
-      // Navigate back after a delay
-      await Future.delayed(const Duration(seconds: 2));
-      if (context.mounted) {
-        Navigator.pop(context);
-      }
-    }
-
     return Scaffold(
       backgroundColor: const Color(0xFFF8F8FF),
       appBar: AppBar(
@@ -69,10 +77,20 @@ class ChangePassword extends StatelessWidget {
             const SizedBox(height: 6),
             TextField(
               controller: currentPasswordController,
-              obscureText: true,
-              decoration: const InputDecoration(
+              obscureText: _obscureCurrentPassword,
+              decoration: InputDecoration(
                 hintText: "Enter current password",
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscureCurrentPassword ? Icons.visibility_off : Icons.visibility,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscureCurrentPassword = !_obscureCurrentPassword;
+                    });
+                  },
+                ),
               ),
             ),
             const SizedBox(height: 20),
@@ -80,10 +98,20 @@ class ChangePassword extends StatelessWidget {
             const SizedBox(height: 6),
             TextField(
               controller: newPasswordController,
-              obscureText: true,
-              decoration: const InputDecoration(
+              obscureText: _obscureNewPassword,
+              decoration: InputDecoration(
                 hintText: "Enter new password",
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscureNewPassword ? Icons.visibility_off : Icons.visibility,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscureNewPassword = !_obscureNewPassword;
+                    });
+                  },
+                ),
               ),
             ),
             const SizedBox(height: 28),

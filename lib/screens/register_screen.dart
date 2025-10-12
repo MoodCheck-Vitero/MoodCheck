@@ -16,6 +16,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _passwordController = TextEditingController();
 
   bool _isLoading = false;
+  bool _obscurePassword = true; // <-- Added for show/hide password toggle
 
   InputDecoration _inputDecoration(String hint) {
     return InputDecoration(
@@ -140,8 +141,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 6),
                 TextFormField(
                   controller: _passwordController,
-                  decoration: _inputDecoration("password"),
-                  obscureText: true,
+                  decoration: _inputDecoration("password").copyWith(
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
+                  ),
+                  obscureText: _obscurePassword,
                   validator: (value) =>
                       value == null || value.length < 6
                           ? "Password must be at least 6 characters"
