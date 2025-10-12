@@ -1,15 +1,30 @@
 import 'package:flutter/material.dart';
 
-class NewPasswordScreen extends StatelessWidget {
+class NewPasswordScreen extends StatefulWidget {
   const NewPasswordScreen({super.key});
 
-  InputDecoration _inputDecoration(String hint) {
+  @override
+  State<NewPasswordScreen> createState() => _NewPasswordScreenState();
+}
+
+class _NewPasswordScreenState extends State<NewPasswordScreen> {
+  final TextEditingController newPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+
+  bool _obscureNewPassword = true;
+  bool _obscureConfirmPassword = true;
+
+  InputDecoration _inputDecoration(String hint, {required bool obscure, required VoidCallback toggle}) {
     return InputDecoration(
       hintText: hint,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      suffixIcon: IconButton(
+        icon: Icon(obscure ? Icons.visibility_off : Icons.visibility),
+        onPressed: toggle,
+      ),
     );
   }
 
@@ -25,34 +40,31 @@ class NewPasswordScreen extends StatelessWidget {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final TextEditingController newPasswordController = TextEditingController();
-    final TextEditingController confirmPasswordController = TextEditingController();
+  Future<void> _handleSubmit() async {
+    final newPassword = newPasswordController.text.trim();
+    final confirmPassword = confirmPasswordController.text.trim();
 
-    Future<void> _handleSubmit() async {
-      final newPassword = newPasswordController.text.trim();
-      final confirmPassword = confirmPasswordController.text.trim();
-
-      if (newPassword.isEmpty || confirmPassword.isEmpty) {
-        _showSnackBar(context, "Please fill in all fields.", isError: true);
-        return;
-      }
-      if (newPassword != confirmPassword) {
-        _showSnackBar(context, "Passwords do not match.", isError: true);
-        return;
-      }
-
-      // Mocked success
-      _showSnackBar(context, "Your password has been successfully updated.");
-
-      // After a delay, pop back (or navigate to login, etc)
-      await Future.delayed(const Duration(seconds: 2));
-      if (Navigator.canPop(context)) {
-        Navigator.pop(context);
-      }
+    if (newPassword.isEmpty || confirmPassword.isEmpty) {
+      _showSnackBar(context, "Please fill in all fields.", isError: true);
+      return;
+    }
+    if (newPassword != confirmPassword) {
+      _showSnackBar(context, "Passwords do not match.", isError: true);
+      return;
     }
 
+    // Mocked success
+    _showSnackBar(context, "Your password has been successfully updated.");
+
+    // After a delay, pop back (or navigate to login, etc)
+    await Future.delayed(const Duration(seconds: 2));
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F8FF),
       appBar: AppBar(
@@ -85,8 +97,16 @@ class NewPasswordScreen extends StatelessWidget {
             const SizedBox(height: 6),
             TextField(
               controller: newPasswordController,
-              obscureText: true,
-              decoration: _inputDecoration("Enter new password"),
+              obscureText: _obscureNewPassword,
+              decoration: _inputDecoration(
+                "Enter new password",
+                obscure: _obscureNewPassword,
+                toggle: () {
+                  setState(() {
+                    _obscureNewPassword = !_obscureNewPassword;
+                  });
+                },
+              ),
             ),
 
             const SizedBox(height: 20),
@@ -95,8 +115,16 @@ class NewPasswordScreen extends StatelessWidget {
             const SizedBox(height: 6),
             TextField(
               controller: confirmPasswordController,
-              obscureText: true,
-              decoration: _inputDecoration("Confirm new password"),
+              obscureText: _obscureConfirmPassword,
+              decoration: _inputDecoration(
+                "Confirm new password",
+                obscure: _obscureConfirmPassword,
+                toggle: () {
+                  setState(() {
+                    _obscureConfirmPassword = !_obscureConfirmPassword;
+                  });
+                },
+              ),
             ),
 
             const SizedBox(height: 28),
