@@ -18,7 +18,7 @@ class BottomNavBar extends StatelessWidget {
       color: Colors.white,
       elevation: 6,
       child: SizedBox(
-        height: 70,
+        height: 50,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
