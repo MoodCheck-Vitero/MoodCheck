@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
 
 class ChangePassword extends StatefulWidget {
   const ChangePassword({super.key});
@@ -13,6 +14,9 @@ class _ChangePasswordState extends State<ChangePassword> {
 
   bool _obscureCurrentPassword = true;
   bool _obscureNewPassword = true;
+  bool _loading = false;
+
+  String? _newPasswordError;
 
   void _showSnackBar(String message, {bool isError = true}) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -26,23 +30,93 @@ class _ChangePasswordState extends State<ChangePassword> {
     );
   }
 
+  void _validateNewPassword(String value) {
+    if (value.length < 8) {
+      setState(() {
+        _newPasswordError = "Password must be at least 8 characters.";
+      });
+    } else {
+      setState(() {
+        _newPasswordError = null;
+      });
+    }
+  }
+
   Future<void> handleChangePassword() async {
     final currentPassword = currentPasswordController.text.trim();
     final newPassword = newPasswordController.text.trim();
+
+    // Clear any previous error state for new password
+    setState(() {
+      _newPasswordError = null;
+    });
 
     if (currentPassword.isEmpty || newPassword.isEmpty) {
       _showSnackBar("Please fill out all fields.");
       return;
     }
 
-    // Simulated success response (mocked logic)
-    _showSnackBar("Your password has been updated. (mocked)", isError: false);
-
-    // Navigate back after a delay
-    await Future.delayed(const Duration(seconds: 2));
-    if (context.mounted) {
-      Navigator.pop(context);
+    if (newPassword.length < 8) {
+      setState(() {
+        _newPasswordError = "Password must be at least 8 characters.";
+      });
+      return;
     }
+
+    setState(() => _loading = true);
+
+    try {
+      final user = authService.value.currentUser;
+      if (user == null || user.email == null) {
+        throw Exception("No logged in user.");
+      }
+
+      final signInResponse = await authService.value.signIn(
+        email: user.email!,
+        password: currentPassword,
+      );
+
+      if (signInResponse.user == null) {
+        _showSnackBar("The current password is incorrect. Please try again.");
+        setState(() => _loading = false);
+        return;
+      }
+
+      await authService.value.updateCurrentPassword(
+        currentPassword: currentPassword,
+        newPassword: newPassword,
+      );
+
+      // Log out user after successful password change
+      await authService.value.signOut();
+
+      _showSnackBar("Your password has been updated. Please log in again.", isError: false);
+
+      await Future.delayed(const Duration(seconds: 2));
+      if (context.mounted) {
+        Navigator.pop(context); // Or navigate to login screen explicitly if needed
+      }
+    } catch (e) {
+      _showSnackBar("The current password is incorrect. Please Try Again");
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    newPasswordController.addListener(() {
+      _validateNewPassword(newPasswordController.text);
+    });
+  }
+
+  @override
+  void dispose() {
+    currentPasswordController.dispose();
+    newPasswordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -102,6 +176,7 @@ class _ChangePasswordState extends State<ChangePassword> {
               decoration: InputDecoration(
                 hintText: "Enter new password",
                 border: const OutlineInputBorder(),
+                errorText: _newPasswordError,
                 suffixIcon: IconButton(
                   icon: Icon(
                     _obscureNewPassword ? Icons.visibility_off : Icons.visibility,
@@ -123,15 +198,21 @@ class _ChangePasswordState extends State<ChangePassword> {
                   padding: const EdgeInsets.symmetric(vertical: 20),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                 ),
-                onPressed: handleChangePassword,
-                child: const Text(
-                  "Update Password",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
+                onPressed: _loading ? null : handleChangePassword,
+                child: _loading
+                    ? const SizedBox(
+                        height: 24,
+                        width: 24,
+                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3),
+                      )
+                    : const Text(
+                        "Update Password",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
               ),
             ),
           ],

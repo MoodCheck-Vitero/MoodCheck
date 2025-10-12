@@ -30,7 +30,6 @@ class AuthService {
       email: email,
       password: password,
       data: {'full_name': name},
-      emailRedirectTo: 'myapp://email-confirmed?email=$email',
     );
     return response;
   }
@@ -51,16 +50,13 @@ class AuthService {
     required String newEmail,
     required String currentPassword,
   }) async {
-    // Supabase doesn’t require re-auth for updating email, but it’s good to verify first.
     await supabase.auth.updateUser(UserAttributes(email: newEmail));
   }
 
-  Future<void> resetCurrentPassword({
+  Future<void> updateCurrentPassword({
     required String currentPassword,
     required String newPassword,
-    required String email,
   }) async {
-    // Supabase doesn't allow re-auth like Firebase. You directly update the password.
     await supabase.auth.updateUser(UserAttributes(password: newPassword));
   }
 }

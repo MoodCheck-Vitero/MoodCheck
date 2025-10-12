@@ -8,11 +8,25 @@ class NewPasswordScreen extends StatefulWidget {
 }
 
 class _NewPasswordScreenState extends State<NewPasswordScreen> {
+  // Change the type to Uri? (nullable) for reset token
+  Uri? resetToken;
+
   final TextEditingController newPasswordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
 
   bool _obscureNewPassword = true;
   bool _obscureConfirmPassword = true;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // Safely retrieve the Uri from deep link
+    final Uri? uri = ModalRoute.of(context)?.settings.arguments as Uri?;
+    if (uri != null) {
+      resetToken = uri;
+    }
+  }
 
   InputDecoration _inputDecoration(String hint, {required bool obscure, required VoidCallback toggle}) {
     return InputDecoration(
@@ -51,6 +65,14 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
     if (newPassword != confirmPassword) {
       _showSnackBar(context, "Passwords do not match.", isError: true);
       return;
+    }
+
+    // Here we can use resetToken in the password update request
+    if (resetToken != null) {
+      print("Reset Token: ${resetToken?.queryParameters['token']}");
+      // Implement actual password reset logic here
+    } else {
+      print("No reset token found.");
     }
 
     // Mocked success

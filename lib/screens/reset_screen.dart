@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
 
 class ResetScreen extends StatelessWidget {
   const ResetScreen({super.key});
 
+  // Helper method for input decoration
   InputDecoration _inputDecoration(String hint) {
     return InputDecoration(
       hintText: hint,
@@ -13,6 +15,7 @@ class ResetScreen extends StatelessWidget {
     );
   }
 
+  // Helper method to show SnackBar
   void _showSnackBar(BuildContext context, String message, {bool isError = false}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -84,7 +87,7 @@ class ResetScreen extends StatelessWidget {
                   ),
                   padding: const EdgeInsets.symmetric(vertical: 18),
                 ),
-                onPressed: () {
+                onPressed: () async {
                   final email = emailController.text.trim();
 
                   if (email.isEmpty) {
@@ -92,15 +95,23 @@ class ResetScreen extends StatelessWidget {
                     return;
                   }
 
-                  // Mocked success response
-                  _showSnackBar(context, "Password reset link sent to $email");
+                  try {
+                    // Call the resetPassword method from AuthService
+                    await authService.value.resetPassword(email: email);
 
-                  // Navigate back after a short delay
-                  Future.delayed(const Duration(seconds: 2), () {
-                    if (Navigator.canPop(context)) {
-                      Navigator.pop(context);
-                    }
-                  });
+                    // Show success message
+                    _showSnackBar(context, "Password reset link sent to $email");
+
+                    // Navigate back after a short delay
+                    Future.delayed(const Duration(seconds: 2), () {
+                      if (Navigator.canPop(context)) {
+                        Navigator.pop(context);
+                      }
+                    });
+                  } catch (e) {
+                    // Handle error (could be invalid email or network issues)
+                    _showSnackBar(context, "Error sending reset link. Please try again.", isError: true);
+                  }
                 },
                 child: const Text(
                   "Send Reset Link",
