@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mood_check/screens/home_screen.dart';
 import '../services/auth_service.dart';
+import 'main_wrapper.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,6 +14,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController passwordController = TextEditingController();
   bool loading = false;
 
+  bool _obscurePassword = true; // <-- added
+
   InputDecoration _inputDecoration(String hint) {
     return InputDecoration(
       hintText: hint,
@@ -24,39 +26,38 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-void _login() async {
-  setState(() => loading = true);
-  try {
-    final response = await authService.value.signIn(
-      email: emailController.text.trim(),
-      password: passwordController.text.trim(),
-    );
-
-    final user = response.user;
-
-    if (user != null && mounted) {
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
-        (route) => false,
+  void _login() async {
+    setState(() => loading = true);
+    try {
+      final response = await authService.value.signIn(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
       );
-    } else {
-      throw Exception("Authentication failed");
-    }
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text("Login failed. Please check your email and password."),
-        backgroundColor: Colors.red,
-        behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.all(16),
-      ),
-    );
-  } finally {
-    setState(() => loading = false);
-  }
-}
 
+      final user = response.user;
+
+      if (user != null && mounted) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const MainWrapper()),
+          (route) => false,
+        );
+      } else {
+        throw Exception("Authentication failed");
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Login failed. Please check your email and password."),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          margin: EdgeInsets.all(16),
+        ),
+      );
+    } finally {
+      setState(() => loading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -95,8 +96,17 @@ void _login() async {
               const SizedBox(height: 6),
               TextField(
                 controller: passwordController,
-                obscureText: true,
-                decoration: _inputDecoration("password"),
+                obscureText: _obscurePassword,
+                decoration: _inputDecoration("password").copyWith(
+                  suffixIcon: IconButton(
+                    icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
+                    onPressed: () {
+                      setState(() {
+                        _obscurePassword = !_obscurePassword;
+                      });
+                    },
+                  ),
+                ),
               ),
               const SizedBox(height: 10),
               Align(
