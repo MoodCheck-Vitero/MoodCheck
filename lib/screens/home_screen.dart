@@ -22,13 +22,22 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   void saveData() {
-    String mood = selectedMood != null ? emojis[selectedMood!] : 'None';
-    String thoughts = _controller.text;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Mood ($mood) saved!')),
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.check_circle, color: Colors.white),
+            SizedBox(width: 12),
+            Expanded(child: Text('Your mood has been saved!', style: TextStyle(fontSize: 16))),
+          ],
+        ),
+        backgroundColor: Colors.green[600],
+        behavior: SnackBarBehavior.floating,
+        margin: EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        duration: Duration(seconds: 3),
+      ),
     );
-    print('Mood: $mood');
-    print('Thoughts: $thoughts');
 
     setState(() {
       selectedMood = null;
@@ -99,6 +108,48 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 20),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                margin: const EdgeInsets.only(bottom: 20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xff009d03), width: 1.5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Text(
+                      "“The greatest discovery of all time is that a person can change their future by merely changing their attitude.”",
+                      style: TextStyle(
+                        fontStyle: FontStyle.italic,
+                        fontSize: 16,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: Text(
+                        "- Oprah Winfrey",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black54,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
 
               const Text(
                 "How are you feeling today?",
@@ -108,9 +159,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: Colors.black,
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
 
-              // Mood Selection
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: List.generate(emojis.length, (index) {
@@ -135,13 +185,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       child: Text(
                         emojis[index],
-                        style: const TextStyle(fontSize: 36),
+                        style: const TextStyle(fontSize: 30),
                       ),
                     ),
                   );
                 }),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
 
               const Text(
                 "What’s on your mind?",
@@ -163,7 +213,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.all(12),
                   child: TextField(
                     controller: _controller,
-                    maxLines: 10,
+                    maxLines: 4,
                     decoration: const InputDecoration(
                       hintText: "Enter your thoughts...",
                       border: InputBorder.none,
@@ -171,7 +221,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
