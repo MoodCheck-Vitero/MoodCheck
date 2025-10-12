@@ -11,7 +11,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
   String selectedTab = 'Monthly';
 
   // Sample frontend data (initially zero for backend integration later)
-  final List<String> moodEmojis = ['😡', '😠', '😐', '🙂', '😄'];
+  final List<String> moodEmojis = ['😡', '😞', '😐', '🙂', '😄'];
   final List<int> moodCounts = [2, 3, 5, 6, 7]; // sample counts
   final Map<String, int> averageMoodPerDay = {
     'Sun': 0,
@@ -23,7 +23,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
     'Sat': 2,
   };
 
-  final Map<int, String> moodLevelEmojis = {0: '😡', 1: '😠', 2: '😐', 3: '🙂', 4: '😄'};
+  final Map<int, String> moodLevelEmojis = {0: '😡', 1: '😞', 2: '😐', 3: '🙂', 4: '😄'};
   final Map<int, Color> moodColors = {
     0: Colors.red,
     1: Colors.deepOrange,
@@ -82,7 +82,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
                     moodEmojis.length,
                     (i) => Column(
                       children: [
-                        Text(moodEmojis[i], style: const TextStyle(fontSize: 36)),
+                        Text(moodEmojis[i], style: const TextStyle(fontSize: 30)),
                         const SizedBox(height: 8),
                         Text(moodCounts[i].toString(),
                             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -141,7 +141,7 @@ class _InsightsScreenState extends State<InsightsScreen> {
                                         child: Center(
                                           child: Text(
                                             emoji,
-                                            style: const TextStyle(fontSize: 28),
+                                            style: const TextStyle(fontSize: 25),
                                           ),
                                         ),
                                       ),
