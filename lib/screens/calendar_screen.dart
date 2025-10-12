@@ -219,7 +219,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
                         return Column(
                           children: [
-                            Text(emoji, style: const TextStyle(fontSize: 36)),
+                            Text(emoji, style: const TextStyle(fontSize: 30)),
                             const SizedBox(height: 8),
                             Text(count.toString(),
                                 style: const TextStyle(
