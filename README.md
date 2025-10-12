@@ -1,57 +1,33 @@
-# **MoodCheck: A Daily Mood Reflection and Motivation App**
+MoodCheck: A Daily Mood Reflection and Motivation App
+Overview
 
-## **Project Overview**
+MoodCheck is a simple, intuitive mobile application designed to help users track their daily emotional well-being. The app allows users to log their mood with easy-to-understand emojis or icons, receive motivational content after each entry, and track their emotional patterns over time through a calendar view. MoodCheck is ideal for students, young professionals, and anyone looking to increase emotional awareness and resilience.
 
-**MoodCheck** is a simple mobile application designed to help users track their emotional well-being daily. By choosing from a selection of mood icons or emojis, users can record how they feel each day. After logging their mood, they’ll be greeted with motivational quotes, songs, or advice to encourage positivity and reflection. The app also allows users to visualize their emotional patterns over time with a calendar view, offering a holistic approach to emotional well-being.
+Features
+1. Mood Logging
 
----
+Users can log their mood each day by selecting from a range of basic mood icons or emojis.
 
-## **Project Objectives**
+After logging their mood, users are greeted with a motivational quote or an inspiring song lyric to help uplift their spirits.
 
-- **Mood Tracking:** Provide users a quick and easy way to record their mood daily by selecting from a variety of mood icons or emojis.
-- **Positive Reinforcement:** After mood submission, users are shown a motivational quote, song lyric, or piece of advice to encourage a positive mindset.
-- **Mood Visualization:** Present users with a calendar view to track their emotional patterns, making it easier to identify trends and changes in their mood over time.
+A comment box is provided to briefly journal or reflect on their day, thoughts, or the events that influenced their mood.
 
----
+2. Calendar View
 
-## **Target Users**
+The app features a calendar view where users can see their mood logs displayed on specific days.
 
-### 1. **Students**
-- **Challenges:** High levels of stress from academic pressure and social expectations.
-- **Solution:** MoodCheck offers students a simple, quick, and non-intrusive way to check in with their emotions daily. It also provides positive reinforcement to help alleviate stress and encourage emotional well-being.
+Each day is marked with an icon corresponding to the user's mood, allowing them to quickly review and recognize emotional patterns or shifts.
 
-### 2. **Young Professionals**
-- **Challenges:** Balancing work-life pressures, deadlines, and career growth.
-- **Solution:** Young professionals can use MoodCheck as a tool to reflect on their emotions, develop emotional resilience, and promote mindfulness amidst their busy schedules.
+This feature encourages self-reflection by providing a visual record of the user's mood history over weeks or months.
 
----
+3. Motivational Content
 
-## **Main Features**
+After logging their mood, users are provided with positive, uplifting content such as motivational quotes or song lyrics designed to encourage positivity and emotional resilience.
 
-### 1. **Mood Calendar View**
-- **Feature:** Displays past mood logs in a calendar format, with each day showing an icon representing the user’s recorded mood.
-- **Purpose:** Helps users track and reflect on emotional patterns over time, identifying highs and lows, recurring emotional states, and potential triggers.
-  
-### 2. **Motivational Content After Mood Submission**
-- **Feature:** Once users submit their mood entry, they receive a motivational quote, uplifting song lyric, or piece of advice.
-- **Purpose:** To inspire and encourage users, providing a moment of positivity to counterbalance any negative feelings and help them reflect on their emotional growth.
+This content aims to provide users with a daily dose of inspiration to help boost their mood and mindset.
 
-### 3. **Comment Box for Daily Reflection**
-- **Feature:** A comment box allows users to write brief notes about their day, providing context for their mood, identifying possible triggers, or reflecting on coping strategies.
-- **Purpose:** To encourage users to engage in self-reflection and offer them a way to express their emotions more fully, fostering a deeper emotional understanding.
+4. Comment Box for Journaling
 
----
+Users can journal their thoughts in the comment box where they can reflect on why they felt a certain way or how they managed their emotions.
 
-## **User Flow**
-
-1. **Daily Mood Logging:**
-   - Users log their mood by selecting an appropriate emoji or icon.
-   
-2. **Post-Submission:**
-   - Once the mood is recorded, the app displays a motivational quote or lyric to uplift the user.
-
-3. **Reflection:**
-   - The user can write a brief note in the comment box, reflecting on their day, mood, or emotional triggers.
-
-4. **Viewing Mood History:**
-   - Users can browse past entries via the calendar view, allowing them to track emotional trends over time.
+This feature helps users develop a deeper understanding of their emotional triggers and coping strategies.
