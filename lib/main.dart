@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:mood_check/screens/change_email.dart';
 import 'package:mood_check/screens/change_password.dart';
-import 'package:mood_check/screens/reset_screen.dart';
 import 'package:mood_check/screens/splash_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
 import 'services/auth_gate.dart';
-import 'screens/confirmation_screen.dart';
-import 'screens/new_password.dart';  // Import NewPasswordScreen
 
 Future<void> main() async {
   await Supabase.initialize(
@@ -29,35 +26,11 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.light,
         primarySwatch: Colors.green,
       ),
-onGenerateRoute: (RouteSettings settings) {
-  final Uri uri = Uri.parse(settings.name ?? '');
-
-  // Prioritize deep link handling
-  if (uri.scheme == 'moodcheck') {
-    if (uri.host == 'email-confirmation') {
-      // Handle email confirmation link
-      return MaterialPageRoute(
-        builder: (_) => ConfirmationScreen(),
-        settings: RouteSettings(arguments: uri),
-      );
-    } else if (uri.host == 'reset-password') {
-      // Handle password reset link
-      return MaterialPageRoute(
-        builder: (_) => NewPasswordScreen(),
-        settings: RouteSettings(arguments: uri),
-      );
-    }
-  }
-
-  // Return null for routes that aren't deep links
-  return null; 
-},
       home: const AuthGate(),
       routes: {
         '/splash': (context) => const SplashScreen(),
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
-        '/reset_password': (context) => const ResetScreen(),
         '/change_email': (context) => const ChangeEmail(),
         '/change_password': (context) => const ChangePassword(),
       },

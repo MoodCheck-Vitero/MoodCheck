@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
 
 class ChangeEmail extends StatefulWidget {
   const ChangeEmail({super.key});
@@ -12,6 +13,80 @@ class _ChangeEmailState extends State<ChangeEmail> {
   final TextEditingController passwordController = TextEditingController();
 
   bool _obscurePassword = true;
+  bool _loading = false;
+
+  void _showSnackBar(String message, {bool isError = true}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? Colors.red : const Color(0xff009d03),
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(16),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+    );
+  }
+
+  Future<void> handleChangeEmail() async {
+    final newEmail = emailController.text.trim();
+    final password = passwordController.text.trim();
+
+    if (newEmail.isEmpty || password.isEmpty) {
+      _showSnackBar("Please fill out all fields.");
+      return;
+    }
+
+    final user = authService.value.currentUser;
+    if (user == null || user.email == null) {
+      _showSnackBar("No logged in user.");
+      return;
+    }
+
+    if (newEmail == user.email) {
+      _showSnackBar("Your new email must be different from your current email.");
+      return;
+    }
+
+    setState(() {
+      _loading = true;
+    });
+
+    try {
+      final signInResponse = await authService.value.signIn(
+        email: user.email!,
+        password: password,
+      );
+
+      if (signInResponse.user == null) {
+        _showSnackBar("The current password is incorrect. Please try again.");
+        setState(() => _loading = false);
+        return;
+      }
+
+      await authService.value.updateEmail(newEmail: newEmail);
+      
+      _showSnackBar(
+        "A verification link has been sent to your new email. Please verify it to complete the process.",
+        isError: false,
+      );
+
+      await authService.value.signOut();
+
+      await Future.delayed(const Duration(seconds: 2));
+
+      if (context.mounted) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/login',
+          (Route<dynamic> route) => false,
+        );
+      }
+    } catch (e) {
+      _showSnackBar("The current password is incorrect. Please try again.");
+    } finally {
+      setState(() => _loading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,51 +153,25 @@ class _ChangeEmailState extends State<ChangeEmail> {
                   padding: const EdgeInsets.symmetric(vertical: 20),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                 ),
-                onPressed: () {
-                  final newEmail = emailController.text.trim();
-                  final password = passwordController.text.trim();
-
-                  if (newEmail.isEmpty || password.isEmpty) {
-                    _showSnackBar(context, "Please fill out all fields.", isError: true);
-                    return;
-                  }
-
-                  // Simulated email update flow
-                  _showSnackBar(
-                    context,
-                    "Verification link sent. Please log in again.",
-                    isError: false,
-                  );
-
-                  // Simulated logout and redirection
-                  Future.delayed(const Duration(seconds: 2), () {
-                    Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
-                  });
-                },
-                child: const Text(
-                  "Update Email",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
+                onPressed: _loading ? null : handleChangeEmail,
+                child: _loading
+                    ? const SizedBox(
+                        height: 24,
+                        width: 24,
+                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3),
+                      )
+                    : const Text(
+                        "Update Email",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  void _showSnackBar(BuildContext context, String message, {bool isError = false}) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isError ? Colors.red : Colors.green,
-        behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
     );
   }

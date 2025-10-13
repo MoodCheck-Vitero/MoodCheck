@@ -46,7 +46,6 @@ class _ChangePasswordState extends State<ChangePassword> {
     final currentPassword = currentPasswordController.text.trim();
     final newPassword = newPasswordController.text.trim();
 
-    // Clear any previous error state for new password
     setState(() {
       _newPasswordError = null;
     });
@@ -87,15 +86,19 @@ class _ChangePasswordState extends State<ChangePassword> {
         newPassword: newPassword,
       );
 
-      // Log out user after successful password change
       await authService.value.signOut();
 
       _showSnackBar("Your password has been updated. Please log in again.", isError: false);
 
       await Future.delayed(const Duration(seconds: 2));
-      if (context.mounted) {
-        Navigator.pop(context); // Or navigate to login screen explicitly if needed
-      }
+
+    if (context.mounted) {
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        '/login',
+        (Route<dynamic> route) => false,
+      );
+    }
     } catch (e) {
       _showSnackBar("The current password is incorrect. Please Try Again");
     } finally {

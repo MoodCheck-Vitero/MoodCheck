@@ -17,13 +17,10 @@ class AuthGate extends StatelessWidget {
           );
         }
 
-        // Check if the snapshot contains an authenticated user session
         if (snapshot.hasData && snapshot.data?.session != null) {
-          // If the user is authenticated, return the MainWrapper
           return const MainWrapper();
         }
 
-        // If the user is not authenticated, just return the SplashScreen
         return const SplashScreen();
       },
     );

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../services/auth_service.dart'; // Ensure this points to the Supabase version
+import '../services/auth_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -16,7 +16,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _passwordController = TextEditingController();
 
   bool _isLoading = false;
-  bool _obscurePassword = true; // <-- Added for show/hide password toggle
+  bool _obscurePassword = true;
 
   InputDecoration _inputDecoration(String hint) {
     return InputDecoration(

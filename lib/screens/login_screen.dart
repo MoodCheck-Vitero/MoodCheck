@@ -14,7 +14,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController passwordController = TextEditingController();
   bool loading = false;
 
-  bool _obscurePassword = true; // <-- added
+  bool _obscurePassword = true;
 
   InputDecoration _inputDecoration(String hint) {
     return InputDecoration(
@@ -105,23 +105,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         _obscurePassword = !_obscurePassword;
                       });
                     },
-                  ),
-                ),
-              ),
-              const SizedBox(height: 10),
-              Align(
-                alignment: Alignment.centerRight,
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, '/reset_password');
-                  },
-                  child: const Text(
-                    "Forgot password?",
-                    style: TextStyle(
-                      color: Color(0xff009d03),
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                    ),
                   ),
                 ),
               ),

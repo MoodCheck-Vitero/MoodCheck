@@ -49,7 +49,6 @@ class _MainWrapperState extends State<MainWrapper> with TickerProviderStateMixin
       _previousIndex = _selectedIndex;
       _selectedIndex = index;
 
-      // Determine slide direction
       bool slideLeft = _selectedIndex > _previousIndex;
 
       _currentAnimation = Tween<Offset>(

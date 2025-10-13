@@ -48,7 +48,6 @@ class AuthService {
 
   Future<void> updateEmail({
     required String newEmail,
-    required String currentPassword,
   }) async {
     await supabase.auth.updateUser(UserAttributes(email: newEmail));
   }
