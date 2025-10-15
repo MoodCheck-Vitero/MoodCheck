@@ -14,31 +14,36 @@
 
 ---
 
-## **Target Users**
-
-### 1. **Students**
-- **Challenges:** High levels of stress from academic pressure and social expectations.
-- **Solution:** MoodCheck offers students a simple, quick, and non-intrusive way to check in with their emotions daily. It also provides positive reinforcement to help alleviate stress and encourage emotional well-being.
-
-### 2. **Young Professionals**
-- **Challenges:** Balancing work-life pressures, deadlines, and career growth.
-- **Solution:** Young professionals can use MoodCheck as a tool to reflect on their emotions, develop emotional resilience, and promote mindfulness amidst their busy schedules.
-
----
-
 ## **Main Features**
 
 ### 1. **Mood Calendar View**
 - **Feature:** Displays past mood logs in a calendar format, with each day showing an icon representing the user’s recorded mood.
-- **Purpose:** Helps users track and reflect on emotional patterns over time, identifying highs and lows, recurring emotional states, and potential triggers.
   
 ### 2. **Motivational Content After Mood Submission**
 - **Feature:** Once users submit their mood entry, they receive a motivational quote, uplifting song lyric, or piece of advice.
-- **Purpose:** To inspire and encourage users, providing a moment of positivity to counterbalance any negative feelings and help them reflect on their emotional growth.
 
 ### 3. **Comment Box for Daily Reflection**
 - **Feature:** A comment box allows users to write brief notes about their day, providing context for their mood, identifying possible triggers, or reflecting on coping strategies.
-- **Purpose:** To encourage users to engage in self-reflection and offer them a way to express their emotions more fully, fostering a deeper emotional understanding.
+
+### 4. **Mood Insights & Analytics**
+- **Feature:** Allows users to view detailed statistics and trends based on their mood logs. This includes average mood per day, mood distribution over time, and total mood counts on a monthly, yearly, or lifetime basis.
+
+### 5. **Manage Past Entries**
+- **Feature:** Users can add mood entries for missed days, as well as edit or delete existing entries to maintain an accurate and complete mood history.
+
+---
+
+## **Installation / User Guide**
+
+### 1. **Install the App**
+- Download and install the app using the provided **.apk** file on your Android device. (Make sure to allow installations from unknown sources if prompted.)
+
+### 2. **Create an Account**
+- Open the app and sign up by entering a valid email address and password.
+
+### 1. **Verify Your Email**
+- Check your email inbox for a verification link.
+- Click the link to confirm your email address. Once clicked, your account will be immediately verified and ready to use.
 
 ---
 
