@@ -41,7 +41,7 @@
 ### 2. **Create an Account**
 - Open the app and sign up by entering a valid email address and password.
 
-### 1. **Verify Your Email**
+### 3. **Verify Your Email**
 - Check your email inbox for a verification link.
 - Click the link to confirm your email address. Once clicked, your account will be immediately verified and ready to use.
 

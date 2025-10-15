@@ -127,22 +127,18 @@ class _ChangePasswordState extends State<ChangePassword> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F8FF),
       appBar: AppBar(
-        backgroundColor: const Color(0xff009d03),
-        centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
+        backgroundColor: const Color(0xff009d03),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+        ),
+        centerTitle: true,
         title: const Text(
           "Change Password",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(25)),
-        ),
-        bottom: const PreferredSize(
-          preferredSize: Size.fromHeight(18),
-          child: SizedBox(),
         ),
       ),
       body: Padding(

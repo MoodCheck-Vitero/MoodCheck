@@ -118,4 +118,13 @@ class DatabaseService {
         .eq('user_id', userId)
         .eq('entry_date', entryDate);
   }
+
+  Future<List<Map<String, dynamic>>> getEntriesForUser(String userId) async {
+  final response = await _client
+      .from('mood_entries')
+      .select('entry_date, mood')
+      .eq('user_id', userId)
+      .order('entry_date', ascending: true);
+  return List<Map<String, dynamic>>.from(response);
+  }
 }

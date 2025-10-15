@@ -140,7 +140,6 @@ class _MiniEntryEditorState extends State<MiniEntryEditor> {
   @override
   Widget build(BuildContext context) {
     final dateStr = DateFormat('EEEE, MMM d, y').format(widget.entryDate);
-
     final bool canSave = selectedMood != null && hasUnsaved;
 
     return AnimatedPadding(
@@ -151,9 +150,9 @@ class _MiniEntryEditorState extends State<MiniEntryEditor> {
       ),
       child: DraggableScrollableSheet(
         expand: false,
-        initialChildSize: 0.5,
-        minChildSize: 0.45,
-        maxChildSize: 0.85,
+        initialChildSize: 0.6,
+        minChildSize: 0.55,
+        maxChildSize: 0.9,
         builder: (context, scrollController) {
           return Container(
             decoration: const BoxDecoration(
@@ -167,7 +166,7 @@ class _MiniEntryEditorState extends State<MiniEntryEditor> {
                 ),
               ],
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             child: SingleChildScrollView(
               controller: scrollController,
               child: Column(
@@ -176,14 +175,12 @@ class _MiniEntryEditorState extends State<MiniEntryEditor> {
                   Container(
                     width: 40,
                     height: 5,
-                    margin: const EdgeInsets.only(bottom: 10),
+                    margin: const EdgeInsets.only(bottom: 12),
                     decoration: BoxDecoration(
                       color: Colors.grey[300],
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-
-                  const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -196,8 +193,7 @@ class _MiniEntryEditorState extends State<MiniEntryEditor> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 15),
-
+                  const SizedBox(height: 18),
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(12),
@@ -233,7 +229,6 @@ class _MiniEntryEditorState extends State<MiniEntryEditor> {
                     ),
                   ),
                   const SizedBox(height: 20),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: List.generate(emojis.length, (index) {
@@ -262,14 +257,13 @@ class _MiniEntryEditorState extends State<MiniEntryEditor> {
                           ),
                           child: Text(
                             emojis[index],
-                            style: const TextStyle(fontSize: 24),
+                            style: const TextStyle(fontSize: 26),
                           ),
                         ),
                       );
                     }),
                   ),
                   const SizedBox(height: 20),
-
                   TextField(
                     controller: _controller,
                     maxLines: 3,
@@ -294,8 +288,8 @@ class _MiniEntryEditorState extends State<MiniEntryEditor> {
                         ),
                       ),
                     ),
-                  const SizedBox(height: 12),
 
+                  const SizedBox(height: 18),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -307,14 +301,18 @@ class _MiniEntryEditorState extends State<MiniEntryEditor> {
                             style: TextStyle(color: Colors.red),
                           ),
                         ),
-                      if ((!hasUnsaved && selectedMood != null)) const SizedBox(width: 8),
+                      if (!hasUnsaved && selectedMood != null)
+                        const SizedBox(width: 8),
                       ElevatedButton(
                         onPressed: canSave ? _save : null,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: canSave
                               ? const Color(0xff009d03)
                               : Colors.grey,
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 22,
+                            vertical: 10,
+                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -338,7 +336,8 @@ class _MiniEntryEditorState extends State<MiniEntryEditor> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 6),
+
+                  const SizedBox(height: 25),
                 ],
               ),
             ),

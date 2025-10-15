@@ -120,13 +120,16 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     final formattedMonth = DateFormat('MMMM yyyy').format(_focusedMonth);
-    final firstDayOfMonth = DateTime(_focusedMonth.year, _focusedMonth.month, 1);
-    final lastDayOfMonth = DateTime(_focusedMonth.year, _focusedMonth.month + 1, 0);
+    final firstDayOfMonth =
+        DateTime(_focusedMonth.year, _focusedMonth.month, 1);
+    final lastDayOfMonth =
+        DateTime(_focusedMonth.year, _focusedMonth.month + 1, 0);
     final int startWeekday = firstDayOfMonth.weekday % 7;
     final int totalDays = lastDayOfMonth.day;
 
     final prevMonth = DateTime(_focusedMonth.year, _focusedMonth.month - 1, 1);
-    final prevMonthLastDay = DateTime(prevMonth.year, prevMonth.month + 1, 0).day;
+    final prevMonthLastDay =
+        DateTime(prevMonth.year, prevMonth.month + 1, 0).day;
 
     final List<Map<String, dynamic>> days = [];
 
@@ -172,16 +175,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           IconButton(
-                            icon: const Icon(Icons.arrow_left, color: Colors.black),
+                            icon: const Icon(Icons.arrow_left,
+                                color: Colors.black),
                             onPressed: _previousMonth,
                           ),
                           Text(
                             formattedMonth,
                             style: const TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 18, color: Colors.black),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                                color: Colors.black),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.arrow_right, color: Colors.black),
+                            icon: const Icon(Icons.arrow_right,
+                                color: Colors.black),
                             onPressed: _nextMonth,
                           ),
                         ],
@@ -224,7 +231,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                             itemCount: days.length,
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
-                            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 7,
                               mainAxisSpacing: 6,
                               crossAxisSpacing: 6,
@@ -236,18 +244,24 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
                               final date = DateTime(
                                 _focusedMonth.year,
-                                isCurrent ? _focusedMonth.month : (dayNumber > 20
-                                    ? _focusedMonth.month - 1
-                                    : _focusedMonth.month + 1),
+                                isCurrent
+                                    ? _focusedMonth.month
+                                    : (dayNumber > 20
+                                        ? _focusedMonth.month - 1
+                                        : _focusedMonth.month + 1),
                                 dayNumber,
                               );
-                              final dateStr = DateFormat('yyyy-MM-dd').format(date);
+                              final dateStr =
+                                  DateFormat('yyyy-MM-dd').format(date);
                               final entryData = entriesByDate[dateStr];
                               final bool hasEntry = entryData != null;
 
-                              final mood = hasEntry ? entryData['mood'] as int : 0;
+                              final mood = hasEntry
+                                  ? entryData['mood'] as int
+                                  : 0;
                               final baseColor = hasEntry
-                                  ? _colorForMood(mood).withOpacity(isCurrent ? 0.25 : 0.12)
+                                  ? _colorForMood(mood)
+                                      .withOpacity(isCurrent ? 0.25 : 0.12)
                                   : Colors.white;
 
                               return GestureDetector(
@@ -256,14 +270,30 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                   decoration: BoxDecoration(
                                     color: baseColor,
                                     borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(color: Colors.grey[300]!),
+                                    border: Border.all(
+                                        color: Colors.grey[300]!),
                                   ),
                                   padding: const EdgeInsets.all(4),
                                   child: Stack(
                                     children: [
+                                      if (hasEntry)
+                                        Positioned(
+                                          bottom: 2,
+                                          right: 3,
+                                          child: Opacity(
+                                            opacity: 0.8,
+                                            child: Text(
+                                              moodEmojis[mood] ?? '',
+                                              style: const TextStyle(
+                                                fontSize: 13,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+
                                       Positioned(
-                                        top: 4,
-                                        left: 6,
+                                        top: 2,
+                                        left: 4,
                                         child: Text(
                                           '$dayNumber',
                                           style: TextStyle(
@@ -275,15 +305,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                           ),
                                         ),
                                       ),
-                                      if (hasEntry)
-                                        Positioned(
-                                          bottom: 2,
-                                          right: 4,
-                                          child: Text(
-                                            moodEmojis[mood] ?? '',
-                                            style: const TextStyle(fontSize: 16),
-                                          ),
-                                        ),
                                     ],
                                   ),
                                 ),
@@ -312,11 +333,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       child: Column(
                         children: [
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment:
+                                MainAxisAlignment.spaceBetween,
                             children: [
                               const Text("Mood Count",
                                   style: TextStyle(
-                                      fontSize: 18, fontWeight: FontWeight.bold)),
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold)),
                               Text("Total: $totalMoods",
                                   style: const TextStyle(
                                       fontSize: 16,
@@ -326,7 +349,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           ),
                           const SizedBox(height: 12),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            mainAxisAlignment:
+                                MainAxisAlignment.spaceEvenly,
                             children: moodCount.entries.map((entry) {
                               final mood = entry.key;
                               final count = entry.value;
@@ -334,7 +358,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
                               return Column(
                                 children: [
-                                  Text(emoji, style: const TextStyle(fontSize: 24)),
+                                  Text(emoji,
+                                      style: const TextStyle(fontSize: 24)),
                                   const SizedBox(height: 6),
                                   Text(
                                     count.toString(),

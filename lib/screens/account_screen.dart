@@ -66,15 +66,14 @@ class _AccountScreenState extends State<AccountScreen> {
       backgroundColor: const Color(0xFFF8F8FF),
       appBar: AppBar(
         backgroundColor: const Color(0xff009d03),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+        ),
         centerTitle: true,
         title: const Text(
-          'Account Settings',
+          "Account Settings",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(25)),
-        ),
-        bottom: const PreferredSize(preferredSize: Size.fromHeight(18), child: SizedBox()),
         actions: [
           IconButton(
             icon: const Icon(Icons.check, color: Colors.white),

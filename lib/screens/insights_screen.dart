@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../services/database_service.dart';
 
 class InsightsScreen extends StatefulWidget {
   const InsightsScreen({super.key});
@@ -9,164 +12,242 @@ class InsightsScreen extends StatefulWidget {
 
 class _InsightsScreenState extends State<InsightsScreen> {
   String selectedTab = 'Monthly';
+  bool isLoading = true;
 
-  // Sample frontend data (initially zero for backend integration later)
-  final List<String> moodEmojis = ['😡', '😞', '😐', '🙂', '😄'];
-  final List<int> moodCounts = [2, 3, 5, 6, 7]; // sample counts
-  final Map<String, int> averageMoodPerDay = {
+  final DatabaseService _db = DatabaseService();
+
+  Map<int, int> moodCounts = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
+  Map<String, double> averageMoodPerDay = {
     'Sun': 0,
-    'Mon': 1,
-    'Tue': 2,
-    'Wed': 3,
-    'Thu': 1,
-    'Fri': 4,
-    'Sat': 2,
+    'Mon': 0,
+    'Tue': 0,
+    'Wed': 0,
+    'Thu': 0,
+    'Fri': 0,
+    'Sat': 0,
   };
 
-  final Map<int, String> moodLevelEmojis = {0: '😡', 1: '😞', 2: '😐', 3: '🙂', 4: '😄'};
-  final Map<int, Color> moodColors = {
-    0: Colors.red,
-    1: Colors.deepOrange,
-    2: Colors.orange,
-    3: Colors.lightGreen,
-    4: Colors.green,
-  };
+  final List<String> moodEmojis = ['😡', '😞', '😐', '🙂', '😄'];
+  final List<Color> moodColors = [
+    Colors.red.shade400,
+    Colors.deepOrange.shade400,
+    Colors.amber.shade300,
+    Colors.lightGreen,
+    Colors.green,
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadInsights();
+  }
+
+  Future<void> _loadInsights() async {
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null) return;
+
+    setState(() => isLoading = true);
+
+    final entries = await _db.getEntriesForUser(user.id);
+    final now = DateTime.now();
+
+    List<Map<String, dynamic>> filtered = [];
+    if (selectedTab == 'Monthly') {
+      filtered = entries.where((e) {
+        final date = DateTime.parse(e['entry_date']);
+        return date.year == now.year && date.month == now.month;
+      }).toList();
+    } else if (selectedTab == 'Yearly') {
+      filtered = entries.where((e) {
+        final date = DateTime.parse(e['entry_date']);
+        return date.year == now.year;
+      }).toList();
+    } else {
+      filtered = entries;
+    }
+
+    moodCounts = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0};
+    Map<String, List<int>> weekdayMoods = {
+      'Sun': [],
+      'Mon': [],
+      'Tue': [],
+      'Wed': [],
+      'Thu': [],
+      'Fri': [],
+      'Sat': [],
+    };
+
+    for (var e in filtered) {
+      final mood = e['mood'] ?? 0;
+      if (mood >= 1 && mood <= 5) {
+        moodCounts[mood] = (moodCounts[mood] ?? 0) + 1;
+
+        final date = DateTime.parse(e['entry_date']);
+        final day = DateFormat('E').format(date);
+        weekdayMoods[day]?.add(mood);
+      }
+    }
+
+    averageMoodPerDay = weekdayMoods.map((day, moods) {
+      if (moods.isEmpty) return MapEntry(day, 0.0);
+      final avg = moods.reduce((a, b) => a + b) / moods.length;
+      return MapEntry(day, avg);
+    });
+
+    setState(() => isLoading = false);
+  }
+
+  void _changeTab(String tab) {
+    setState(() {
+      selectedTab = tab;
+    });
+    _loadInsights();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final totalMoods = moodCounts.values.fold<int>(0, (a, b) => a + b);
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8F8FF),
       appBar: AppBar(
         backgroundColor: const Color(0xff009d03),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+        ),
         centerTitle: true,
         title: const Text(
-          'Insights',
+          "Insights",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(25)),
-        ),
-        bottom: const PreferredSize(preferredSize: Size.fromHeight(18), child: SizedBox()),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              // Tab Selection
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: ['Monthly', 'Yearly', 'Lifetime'].map((tab) {
-                  final isSelected = selectedTab == tab;
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: isSelected ? const Color(0xff009d03) : Colors.grey[300],
-                        foregroundColor: isSelected ? Colors.white : Colors.black,
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: ['Monthly', 'Yearly', 'Lifetime'].map((tab) {
+                        final isSelected = selectedTab == tab;
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: isSelected
+                                  ? const Color(0xff009d03)
+                                  : Colors.grey[300],
+                              foregroundColor:
+                                  isSelected ? Colors.white : Colors.black,
+                            ),
+                            onPressed: () => _changeTab(tab),
+                            child: Text(tab),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 20),
+
+                    _buildCard(
+                      title: 'Mood Count (Total: $totalMoods)',
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: List.generate(
+                          moodEmojis.length,
+                          (i) => Column(
+                            children: [
+                              Text(moodEmojis[i],
+                                  style: const TextStyle(fontSize: 30)),
+                              const SizedBox(height: 6),
+                              Text(
+                                moodCounts[i + 1].toString(),
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
-                      onPressed: () => setState(() => selectedTab = tab),
-                      child: Text(tab),
                     ),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-              // Mood Count Card
-              _buildCard(
-                title: 'Mood Count',
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: List.generate(
-                    moodEmojis.length,
-                    (i) => Column(
-                      children: [
-                        Text(moodEmojis[i], style: const TextStyle(fontSize: 30)),
-                        const SizedBox(height: 8),
-                        Text(moodCounts[i].toString(),
-                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
+                    _buildCard(
+                      title: 'Average Daily Mood',
+                      child: SizedBox(
+                        height: 200,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: averageMoodPerDay.entries.map((entry) {
+                            final avgMood = entry.value;
+                            final hasData = avgMood > 0;
+                            final moodIndex = hasData
+                                ? (avgMood - 1).clamp(0, 4).toInt()
+                                : 0;
+                            final emoji =
+                                hasData ? moodEmojis[moodIndex] : '❌';
+                            final color =
+                                hasData ? moodColors[moodIndex] : Colors.grey.shade300;
 
-              // Average Daily Mood Card
-              _buildCard(
-                title: 'Average Daily Mood',
-                child: SizedBox(
-                  height: 220,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: averageMoodPerDay.entries.map((entry) {
-                      // Determine the mood level based on value (for frontend demo)
-                      final int moodLevel = entry.value.clamp(0, 4);
-                      final double barFactor = ((moodLevel + 1) / 5.0 * 0.78).clamp(0.05, 1.0);
-                      final Color barColor = moodColors[moodLevel]!;
-                      final String emoji = moodLevelEmojis[moodLevel]!;
+                            final double minHeight = 25;
+                            final double maxHeight = 140;
+                            final heightFactor =
+                                hasData ? ((avgMood / 5).clamp(0.1, 1.0)) : 0.1;
+                            final barHeight =
+                                (minHeight + (maxHeight - minHeight) * heightFactor)
+                                    .clamp(minHeight, maxHeight);
 
-                      return Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Expanded(
-                              child: LayoutBuilder(
-                                builder: (context, constraints) {
-                                  final double barHeight = constraints.maxHeight * barFactor;
-                                  return Stack(
-                                    clipBehavior: Clip.none,
-                                    children: [
-                                      Positioned(
-                                        bottom: 0,
-                                        left: 0,
-                                        right: 0,
-                                        child: Center(
-                                          child: Container(
-                                            height: barHeight,
-                                            width: 28,
-                                            decoration: BoxDecoration(
-                                              color: barColor,
-                                              borderRadius: BorderRadius.circular(8),
-                                            ),
+                            return Expanded(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Expanded(
+                                    child: Stack(
+                                      clipBehavior: Clip.none,
+                                      alignment: Alignment.bottomCenter,
+                                      children: [
+                                        Container(
+                                          height: barHeight,
+                                          width: 28,
+                                          decoration: BoxDecoration(
+                                            color: color,
+                                            borderRadius:
+                                                BorderRadius.circular(8),
                                           ),
                                         ),
-                                      ),
-                                      Positioned(
-                                        bottom: barHeight + 6,
-                                        left: 0,
-                                        right: 0,
-                                        child: Center(
+                                        Positioned(
+                                          bottom: barHeight + 6,
                                           child: Text(
                                             emoji,
-                                            style: const TextStyle(fontSize: 25),
+                                            style:
+                                                const TextStyle(fontSize: 22),
                                           ),
                                         ),
-                                      ),
-                                    ],
-                                  );
-                                },
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    entry.key,
+                                    style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ],
                               ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              entry.key,
-                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                            ),
-                          ],
+                            );
+                          }).toList(),
                         ),
-                      );
-                    }).toList(),
-                  ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 20),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 
@@ -178,12 +259,20 @@ class _InsightsScreenState extends State<InsightsScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.2), blurRadius: 6, offset: const Offset(0, 3))],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.2),
+              blurRadius: 6,
+              offset: const Offset(0, 3),
+            ),
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(title,
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
             child,
           ],
