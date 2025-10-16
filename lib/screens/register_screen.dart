@@ -18,6 +18,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isLoading = false;
   bool _obscurePassword = true;
 
+  bool _hasMinLength = false;
+  bool _hasUppercase = false;
+  bool _hasLowercase = false;
+  bool _hasNumber = false;
+
   InputDecoration _inputDecoration(String hint) {
     return InputDecoration(
       hintText: hint,
@@ -26,6 +31,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
     );
+  }
+
+  void _validatePassword(String value) {
+    setState(() {
+      _hasMinLength = value.length >= 8;
+      _hasUppercase = value.contains(RegExp(r'[A-Z]'));
+      _hasLowercase = value.contains(RegExp(r'[a-z]'));
+      _hasNumber = value.contains(RegExp(r'[0-9]'));
+    });
   }
 
   Future<void> _signUp() async {
@@ -62,10 +76,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
         String message = "Something went wrong.";
         final errorMessage = e.toString().toLowerCase();
 
+        // Detailed error handling for password-related issues
         if (errorMessage.contains('email')) {
           message = "Please enter a valid or unused email address.";
         } else if (errorMessage.contains('password')) {
-          message = "Password must be at least 8 characters.";
+          // Add specific checks for password length and strength
+          if (!_hasMinLength) {
+            message = "Password must be at least 8 characters.";
+          } else if (!_hasUppercase) {
+            message = "Password must contain at least 1 uppercase letter.";
+          } else if (!_hasLowercase) {
+            message = "Password must contain at least 1 lowercase letter.";
+          } else if (!_hasNumber) {
+            message = "Password must contain at least 1 number.";
+          }
+        } else if (errorMessage.contains('network') || errorMessage.contains('timeout')) {
+          message = "Network error. Please try again later.";
         }
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -154,10 +180,62 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                   obscureText: _obscurePassword,
-                  validator: (value) =>
-                      value == null || value.length < 6
-                          ? "Password must be at least 6 characters"
-                          : null,
+                  validator: (value) {
+                    if (value == null || value.length < 8) {
+                      return "Password must be at least 8 characters";
+                    }
+                    return null;
+                  },
+                  onChanged: _validatePassword,
+                ),
+                const SizedBox(height: 12),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          _hasMinLength ? Icons.check_circle : Icons.error,
+                          color: _hasMinLength ? Colors.green : Colors.red,
+                        ),
+                        const SizedBox(width: 8),
+                        const Text("At least 8 characters"),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Icon(
+                          _hasUppercase ? Icons.check_circle : Icons.error,
+                          color: _hasUppercase ? Colors.green : Colors.red,
+                        ),
+                        const SizedBox(width: 8),
+                        const Text("At least 1 uppercase letter"),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Icon(
+                          _hasLowercase ? Icons.check_circle : Icons.error,
+                          color: _hasLowercase ? Colors.green : Colors.red,
+                        ),
+                        const SizedBox(width: 8),
+                        const Text("At least 1 lowercase letter"),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Icon(
+                          _hasNumber ? Icons.check_circle : Icons.error,
+                          color: _hasNumber ? Colors.green : Colors.red,
+                        ),
+                        const SizedBox(width: 8),
+                        const Text("At least 1 number"),
+                      ],
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 24),
                 const Center(
