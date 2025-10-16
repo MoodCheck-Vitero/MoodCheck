@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mood_check/screens/change_email.dart';
 import 'package:mood_check/screens/change_password.dart';
-import 'package:mood_check/screens/splash_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
@@ -28,7 +27,6 @@ class MyApp extends StatelessWidget {
       ),
       home: const AuthGate(),
       routes: {
-        '/splash': (context) => const SplashScreen(),
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
         '/change_email': (context) => const ChangeEmail(),
