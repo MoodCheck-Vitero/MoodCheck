@@ -49,14 +49,14 @@
 
 ## **User Flow**
 
-1. **Daily Mood Logging:**
-   - Users log their mood by selecting an appropriate emoji or icon.
+### 1. **Daily Mood Logging:**
+- Users log their mood by selecting an appropriate emoji or icon.
    
-2. **Post-Submission:**
-   - Once the mood is recorded, the app displays a motivational quote or lyric to uplift the user.
+### 2. **Post-Submission:**
+- Once the mood is recorded, the app displays a motivational quote or lyric to uplift the user.
 
-3. **Reflection:**
-   - The user can write a brief note in the comment box, reflecting on their day, mood, or emotional triggers.
+### 3. **Reflection:**
+- The user can write a brief note in the comment box, reflecting on their day, mood, or emotional triggers.
 
-4. **Viewing Mood History:**
-   - Users can browse past entries via the calendar view, allowing them to track emotional trends over time.
+### 4. **Viewing Mood History:**
+- Users can browse past entries via the calendar view, allowing them to track emotional trends over time.
