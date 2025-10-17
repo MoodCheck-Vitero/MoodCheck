@@ -18,6 +18,11 @@ class _ChangePasswordState extends State<ChangePassword> {
 
   String? _newPasswordError;
 
+  bool _hasMinLength = false;
+  bool _hasUppercase = false;
+  bool _hasLowercase = false;
+  bool _hasNumber = false;
+
   void _showSnackBar(String message, {bool isError = true}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -31,15 +36,12 @@ class _ChangePasswordState extends State<ChangePassword> {
   }
 
   void _validateNewPassword(String value) {
-    if (value.length < 8) {
-      setState(() {
-        _newPasswordError = "Password must be at least 8 characters.";
-      });
-    } else {
-      setState(() {
-        _newPasswordError = null;
-      });
-    }
+    setState(() {
+      _hasMinLength = value.length >= 8;
+      _hasUppercase = value.contains(RegExp(r'[A-Z]'));
+      _hasLowercase = value.contains(RegExp(r'[a-z]'));
+      _hasNumber = value.contains(RegExp(r'[0-9]'));
+    });
   }
 
   Future<void> handleChangePassword() async {
@@ -49,16 +51,24 @@ class _ChangePasswordState extends State<ChangePassword> {
     setState(() {
       _newPasswordError = null;
     });
-
     if (currentPassword.isEmpty || newPassword.isEmpty) {
       _showSnackBar("Please fill out all fields.");
       return;
     }
-
     if (newPassword.length < 8) {
-      setState(() {
-        _newPasswordError = "Password must be at least 8 characters.";
-      });
+      _showSnackBar("Password must be at least 8 characters.");
+      return;
+    }
+    if (!newPassword.contains(RegExp(r'[A-Z]'))) {
+      _showSnackBar("Password must contain at least 1 uppercase letter.");
+      return;
+    }
+    if (!newPassword.contains(RegExp(r'[a-z]'))) {
+      _showSnackBar("Password must contain at least 1 lowercase letter.");
+      return;
+    }
+    if (!newPassword.contains(RegExp(r'[0-9]'))) {
+      _showSnackBar("Password must contain at least 1 number.");
       return;
     }
 
@@ -92,15 +102,15 @@ class _ChangePasswordState extends State<ChangePassword> {
 
       await Future.delayed(const Duration(seconds: 2));
 
-    if (context.mounted) {
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        '/login',
-        (Route<dynamic> route) => false,
-      );
-    }
+      if (context.mounted) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          '/login',
+          (Route<dynamic> route) => false,
+        );
+      }
     } catch (e) {
-      _showSnackBar("The current password is incorrect. Please Try Again");
+      _showSnackBar("The current password is incorrect. Please try again.");
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -187,6 +197,55 @@ class _ChangePasswordState extends State<ChangePassword> {
                   },
                 ),
               ),
+            ),
+            const SizedBox(height: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      _hasMinLength ? Icons.check_circle : Icons.error,
+                      color: _hasMinLength ? Colors.green : Colors.red,
+                    ),
+                    const SizedBox(width: 8),
+                    const Text("At least 8 characters"),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    Icon(
+                      _hasUppercase ? Icons.check_circle : Icons.error,
+                      color: _hasUppercase ? Colors.green : Colors.red,
+                    ),
+                    const SizedBox(width: 8),
+                    const Text("At least 1 uppercase letter"),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    Icon(
+                      _hasLowercase ? Icons.check_circle : Icons.error,
+                      color: _hasLowercase ? Colors.green : Colors.red,
+                    ),
+                    const SizedBox(width: 8),
+                    const Text("At least 1 lowercase letter"),
+                  ],
+                ),
+                const SizedBox(height: 6),
+                Row(
+                  children: [
+                    Icon(
+                      _hasNumber ? Icons.check_circle : Icons.error,
+                      color: _hasNumber ? Colors.green : Colors.red,
+                    ),
+                    const SizedBox(width: 8),
+                    const Text("At least 1 number"),
+                  ],
+                ),
+              ],
             ),
             const SizedBox(height: 28),
             SizedBox(

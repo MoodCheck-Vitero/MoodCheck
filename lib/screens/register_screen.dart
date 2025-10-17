@@ -76,11 +76,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         String message = "Something went wrong.";
         final errorMessage = e.toString().toLowerCase();
 
-        // Detailed error handling for password-related issues
         if (errorMessage.contains('email')) {
           message = "Please enter a valid or unused email address.";
         } else if (errorMessage.contains('password')) {
-          // Add specific checks for password length and strength
           if (!_hasMinLength) {
             message = "Password must be at least 8 characters.";
           } else if (!_hasUppercase) {
